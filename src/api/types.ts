@@ -1,6 +1,6 @@
 // Data models for the station API.
-// Only two of the six payloads are typed. The rest travel as `any`.
-// TODO: TelemetryResponse, CrewResponse, CrewMember, IncidentsResponse, Incident
+// Every payload getData() can return has a named interface here — no `any`
+// crosses this boundary. Shapes match the fixtures in public/api/*.json.
 
 export interface Station {
   id: string;
@@ -16,3 +16,48 @@ export interface Station {
 }
 
 export type Severity = 'critical' | 'warning' | 'info';
+
+export interface TelemetrySeries {
+  label: string;
+  unit: string;
+  points: number[];
+}
+
+export type TelemetrySeriesKey = 'o2' | 'power' | 'hullTemp' | 'hullIntegrity';
+
+export interface TelemetryResponse {
+  updated: string;
+  intervalMinutes: number;
+  series: Record<TelemetrySeriesKey, TelemetrySeries>;
+}
+
+export interface CrewMember {
+  id: string;
+  name: string;
+  role: string;
+  shift: string;
+  onDuty: boolean;
+  heartRate: number;
+  sleepHours: number;
+  missionDay: number;
+}
+
+export interface CrewResponse {
+  updated: string;
+  members: CrewMember[];
+}
+
+export interface Incident {
+  id: string;
+  severity: Severity;
+  system: string;
+  title: string;
+  timestamp: string;
+  resolved: boolean;
+  assignee: string;
+}
+
+export interface IncidentsResponse {
+  updated: string;
+  items: Incident[];
+}

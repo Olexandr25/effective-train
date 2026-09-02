@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getData } from '../api/client';
+import type { Station, TelemetryResponse, CrewResponse, IncidentsResponse } from '../api/types';
 import { flashAlert } from '../utils';
 
 // The main mission control view. Started small in 2034. It has... grown.
@@ -23,10 +24,10 @@ export default function Dashboard() {
     let cancelled = false;
     setLoading(true);
     Promise.all([
-      getData('station'),
-      getData('telemetry'),
-      getData('crew'),
-      getData('incidents')
+      getData<Station>('station'),
+      getData<TelemetryResponse>('telemetry'),
+      getData<CrewResponse>('crew'),
+      getData<IncidentsResponse>('incidents')
     ])
       .then((results) => {
         if (cancelled) return;
