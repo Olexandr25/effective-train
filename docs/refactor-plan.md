@@ -112,3 +112,18 @@ renders and the status pill/tiles look unchanged where no behavior change
 was intended. Final acceptance: full `npm run validate` green, all
 `E1.1`–`E1.7` structural checks satisfied, and the two intentional behavior
 fixes visible in the incident and telemetry panels.
+
+## Checks
+
+Mirrors `ASSIGNMENT.md` Exercise 1's checklist, tracked here and checked off
+as each commit lands. All must be true, plus lint/typecheck/coverage/dupcheck
+green, before Exercise 1 is considered done.
+
+- [x] `E1.1` docs/refactor-plan.md committed, ≥ 20 lines — this file, committed before any refactor edit.
+- [ ] `E1.2` Dashboard.tsx < 150 non-empty lines — commit 5.
+- [ ] `E1.3` OldDashboard.tsx deleted — commit 6.
+- [ ] `E1.4` src/hooks/ has a shared hook — commit 4.
+- [ ] `E1.5` src/domain/ has extracted pure logic — commit 3.
+- [ ] `E1.6` zero `any` in src/api/ — commit 2.
+- [ ] `E1.7` src/config.ts exists — commit 1.
+- [ ] plus: lint, typecheck, coverage, and duplication all green — verified after every commit, final check before moving to Exercise 2.
