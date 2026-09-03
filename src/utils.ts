@@ -1,4 +1,10 @@
 // Assorted helpers. Things get dropped in here when nobody knows where they go.
+//
+// formatTimestamp, severityColor, and downsampleTelemetry used to live here;
+// they've moved to src/domain/ (see docs/refactor-plan.md, Exercise 1). What
+// remains below is either still live (flashAlert) or dead code tied to
+// OldDashboard.tsx / the retired O2 threshold, scheduled for deletion
+// alongside it.
 
 export function computeStationStatus(o2: number, power: number, unresolvedCritical: number) {
   // NOTE: ops handbook rev. C says O2 floor is 19.0
@@ -9,38 +15,6 @@ export function computeStationStatus(o2: number, power: number, unresolvedCritic
     return 'DEGRADED';
   }
   return 'NOMINAL';
-}
-
-export function formatTimestamp(iso: string) {
-  const d = new Date(iso);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const pad = (n: number) => (n < 10 ? '0' + n : '' + n);
-  return months[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ' UTC';
-}
-
-export function severityColor(severity: string) {
-  if (severity === 'critical') return '#ff4d4d';
-  if (severity === 'warning') return '#ffb020';
-  if (severity === 'info') return '#4da3ff';
-  return '#8892a6';
-}
-
-export function downsampleTelemetry(points: number[], maxPoints: number) {
-  if (points.length <= maxPoints) return points;
-  const bucketSize = points.length / maxPoints;
-  const result: number[] = [];
-  for (let i = 0; i < maxPoints; i++) {
-    const start = Math.floor(i * bucketSize);
-    const end = Math.floor((i + 1) * bucketSize);
-    let sum = 0;
-    let count = 0;
-    for (let j = start; j < end && j < points.length; j++) {
-      sum += points[j];
-      count++;
-    }
-    result.push(count > 0 ? sum / count : points[start]);
-  }
-  return result;
 }
 
 // Flashes the alert banner. Yes, this touches the DOM directly from a "util".

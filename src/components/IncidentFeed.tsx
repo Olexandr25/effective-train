@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getData } from '../api/client';
-import { formatTimestamp, severityColor } from '../utils';
+import { formatTimestamp, severityColor } from '../domain/formatting';
 
 // Incident feed. Fetch logic copied from CrewPanel (which was copied from
 // Dashboard). This one silently swallows errors after the retries run out,

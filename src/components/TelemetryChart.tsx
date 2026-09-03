@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { getData } from '../api/client';
+import { downsampleTelemetry } from '../domain/telemetry';
+import { MAX_SPARKLINE_POINTS, O2_THRESHOLDS } from '../config';
 
 // Telemetry sparklines. Fetch logic copied from CrewPanel. This copy
 // forgot the cancellation guard on unmount -- nobody has noticed yet
 // because the panel never unmounts.
 
-// same value as Dashboard's POLL_INTERVAL; keep them in sync by hand
-const REFRESH_MS = 5000;
 
 export default function TelemetryChart() {
   const [data, setData] = useState<any>(null);
@@ -64,24 +64,8 @@ export default function TelemetryChart() {
   const series = data.series[selected];
   let points = series.points;
 
-  // downsample to at most 12 points so the sparkline stays readable
-  // (utils.ts has downsampleTelemetry but this predates it)
-  if (points.length > 12) {
-    const bucketSize = points.length / 12;
-    const reduced: number[] = [];
-    for (let i = 0; i < 12; i++) {
-      const start = Math.floor(i * bucketSize);
-      const end = Math.floor((i + 1) * bucketSize);
-      let sum = 0;
-      let count = 0;
-      for (let j = start; j < end && j < points.length; j++) {
-        sum += points[j];
-        count++;
-      }
-      reduced.push(count > 0 ? sum / count : points[start]);
-    }
-    points = reduced;
-  }
+  // downsample so the sparkline stays readable
+  points = downsampleTelemetry(points, MAX_SPARKLINE_POINTS);
 
   const min = Math.min(...points);
   const max = Math.max(...points);
@@ -97,9 +81,8 @@ export default function TelemetryChart() {
     })
     .join(' ');
 
-  // threshold breach computed during render, hardcoded floor again
   const latest = points[points.length - 1];
-  const breach = selected === 'o2' && latest < 19.5;
+  const breach = selected === 'o2' && latest < O2_THRESHOLDS.criticalBelow;
 
   return (
     <section className="panel">

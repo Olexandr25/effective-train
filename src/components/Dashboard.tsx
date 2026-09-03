@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { getData } from '../api/client';
 import type { Station, TelemetryResponse, CrewResponse, IncidentsResponse } from '../api/types';
 import { flashAlert } from '../utils';
+import { computeStationStatus } from '../domain/stationStatus';
+import { computeTrend } from '../domain/telemetry';
+import { formatTimestamp } from '../domain/formatting';
+import { TREND_EPSILON } from '../config';
 
 // The main mission control view. Started small in 2034. It has... grown.
 // Header, summary tiles, alert banner, resupply countdown, shift board --
@@ -110,33 +114,14 @@ export default function Dashboard() {
     }
   }
 
-  // NOTE: mission control wall display uses 19.5 as the O2 floor
-  let status = 'NOMINAL';
-  let statusColor = '#3ddc84';
-  if (latestO2 < 19.5 || unresolvedCritical > 1) {
-    status = 'CRITICAL';
-    statusColor = '#ff4d4d';
-  } else if (latestO2 < 19.9 || latestPower < 50 || unresolvedCritical > 0) {
-    status = 'DEGRADED';
-    statusColor = '#ffb020';
-  }
+  const { status, color: statusColor } = computeStationStatus(latestO2, latestPower, unresolvedCritical);
 
-  // ---- O2 trend arrow --------------------------------------------------------
-  let o2Trend = '→';
+  // ---- O2 / power trend arrows ------------------------------------------------
   const o2Prev = o2Points[o2Points.length - 4];
-  if (latestO2 - o2Prev > 0.15) {
-    o2Trend = '↑';
-  } else if (latestO2 - o2Prev < -0.15) {
-    o2Trend = '↓';
-  }
+  const o2Trend = computeTrend(latestO2, o2Prev, TREND_EPSILON.o2);
 
-  let powerTrend = '→';
   const powerPrev = powerPoints[powerPoints.length - 4];
-  if (latestPower - powerPrev > 2) {
-    powerTrend = '↑';
-  } else if (latestPower - powerPrev < -2) {
-    powerTrend = '↓';
-  }
+  const powerTrend = computeTrend(latestPower, powerPrev, TREND_EPSILON.power);
 
   // ---- power budget ----------------------------------------------------------
   let powerAvg = 0;
@@ -210,14 +195,6 @@ export default function Dashboard() {
   });
   const topIncident = unresolved.length > 0 ? unresolved[0] : null;
 
-  // date formatting, local copy (utils.ts has one too but it formats differently)
-  const fmtDate = (iso: string) => {
-    const d = new Date(iso);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const pad = (n: number) => (n < 10 ? '0' + n : '' + n);
-    return months[d.getUTCMonth()] + ' ' + d.getUTCDate() + ' ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + 'z';
-  };
-
   /*
   // v1 polling implementation, kept for reference during the 2035 migration
   // useEffect(() => {
@@ -255,7 +232,7 @@ export default function Dashboard() {
           <span style={{ marginLeft: 10 }}>
             {topIncident.id}: {topIncident.title}
           </span>
-          <span style={{ marginLeft: 'auto', color: '#8892a6', fontSize: 12 }}>{fmtDate(topIncident.timestamp)}</span>
+          <span style={{ marginLeft: 'auto', color: '#8892a6', fontSize: 12 }}>{formatTimestamp(topIncident.timestamp)}</span>
         </div>
       )}
 
@@ -312,7 +289,7 @@ export default function Dashboard() {
         <div className={'tile ' + resupplyClass}>
           <div className="tile-label">Next Resupply</div>
           <div className="tile-value" style={{ fontSize: 24 }}>{resupplyLabel}</div>
-          <div className="tile-sub">{fmtDate(station.nextResupply)}</div>
+          <div className="tile-sub">{formatTimestamp(station.nextResupply)}</div>
         </div>
 
         <div className={'tile ' + sleepClass}>
@@ -329,7 +306,7 @@ export default function Dashboard() {
           <div className="tile-value" style={{ fontSize: 20 }}>
             α {shifts['alpha'] || 0} · β {shifts['beta'] || 0} · γ {shifts['gamma'] || 0}
           </div>
-          <div className="tile-sub">commissioned {fmtDate(station.commissioned + 'T00:00:00Z')}</div>
+          <div className="tile-sub">commissioned {formatTimestamp(station.commissioned + 'T00:00:00Z')}</div>
         </div>
       </div>
     </div>

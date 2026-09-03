@@ -67,7 +67,7 @@ Checks:
 - [x] `E1.2` Dashboard.tsx < 150 non-empty lines
 - [ ] `E1.3` OldDashboard.tsx deleted
 - [ ] `E1.4` src/hooks/ has a shared hook
-- [ ] `E1.5` src/domain/ has extracted pure logic
+- [x] `E1.5` src/domain/ has extracted pure logic
 - [x] `E1.6` zero `any` in src/api/
 - [x] `E1.7` src/config.ts exists
 - [x] plus: lint, typecheck, coverage, and duplication all green
