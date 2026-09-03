@@ -53,3 +53,22 @@ The O2 alert floor is defined three different, disagreeing ways in the codebase:
 - `OldDashboard.tsx`: CRITICAL below 19.0, DEGRADED below 20.0.
 
 Pick one number for `src/config.ts` and document the decision and reasoning in `docs/refactor-plan.md`.
+
+## Hooks (Exercise 2)
+
+`.claude/settings.json` wires up three hooks, scripts live in `.claude/hooks/`:
+
+- `block-protected-paths.sh` (PreToolUse on `Edit|Write|MultiEdit`) — denies
+  any edit under `public/api/` or to `RUBRIC.md` (exit 2), matching the
+  "MUST ask first before deleting" paths above. See `docs/hooks-demo.md`
+  for a captured block.
+- `run-tests-on-edit.sh` (PostToolUse on `Edit|Write|MultiEdit`) — after an
+  edit under `src/`, reruns `npx vitest run tests/ src/` and fails loudly
+  (exit 2, stderr) if it breaks something, instead of letting it surface
+  later at `npm run validate`.
+- `inject-conventions.sh` (UserPromptSubmit) — echoes a one-line reminder
+  of the conventions above on every prompt.
+
+All three only act on the tool names/paths they care about and exit 0
+(no-op) otherwise; path filtering happens inside the script, not the
+`matcher` field, since matchers only match tool names.
