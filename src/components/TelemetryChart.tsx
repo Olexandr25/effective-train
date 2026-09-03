@@ -1,60 +1,22 @@
-import { useEffect, useState } from 'react';
-import { getData } from '../api/client';
+import { useState } from 'react';
+import { useFetchResource } from '../hooks/useFetchResource';
 import { downsampleTelemetry } from '../domain/telemetry';
 import { MAX_SPARKLINE_POINTS, O2_THRESHOLDS } from '../config';
+import PanelStatus from './PanelStatus';
+import type { TelemetryResponse, TelemetrySeriesKey } from '../api/types';
 
-// Telemetry sparklines. Fetch logic copied from CrewPanel. This copy
-// forgot the cancellation guard on unmount -- nobody has noticed yet
-// because the panel never unmounts.
-
+// Telemetry sparklines.
+//
+// This used to be missing the cancellation guard the other panels had
+// (nobody noticed because the panel never unmounts) - the shared hook
+// handles cancellation for every panel uniformly, so that's fixed too.
 
 export default function TelemetryChart() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [retryCount, setRetryCount] = useState(0);
-  const [selected, setSelected] = useState('o2');
+  const { data, loading, error, retry } = useFetchResource<TelemetryResponse>('telemetry');
+  const [selected, setSelected] = useState<TelemetrySeriesKey>('o2');
 
-  useEffect(() => {
-    setLoading(true);
-    setError('');
-    getData('telemetry')
-      .then((result) => {
-        setData(result);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (retryCount < 3) {
-          setTimeout(() => setRetryCount(retryCount + 1), 1000);
-        } else {
-          setError(String(err && err.message ? err.message : err));
-          setLoading(false);
-        }
-      });
-  }, [retryCount]);
-
-  if (loading) {
-    return (
-      <section className="panel">
-        <h2>Telemetry</h2>
-        <div className="panel-loading">
-          <div className="spinner" />
-          <p>Loading telemetry…</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="panel">
-        <h2>Telemetry</h2>
-        <div className="panel-error">
-          <p>⚠ {error}</p>
-          <button onClick={() => setRetryCount(0)}>Retry</button>
-        </div>
-      </section>
-    );
+  if (loading || error) {
+    return <PanelStatus title="Telemetry" loading={loading} error={error} loadingMessage="Loading telemetry…" onRetry={retry} />;
   }
 
   if (!data) {
@@ -62,10 +24,7 @@ export default function TelemetryChart() {
   }
 
   const series = data.series[selected];
-  let points = series.points;
-
-  // downsample so the sparkline stays readable
-  points = downsampleTelemetry(points, MAX_SPARKLINE_POINTS);
+  const points = downsampleTelemetry(series.points, MAX_SPARKLINE_POINTS);
 
   const min = Math.min(...points);
   const max = Math.max(...points);
@@ -74,7 +33,7 @@ export default function TelemetryChart() {
   const h = 80;
   const step = w / (points.length - 1);
   const coords = points
-    .map((p: number, i: number) => {
+    .map((p, i) => {
       const x = (i * step).toFixed(1);
       const y = (h - ((p - min) / range) * (h - 8) - 4).toFixed(1);
       return x + ',' + y;
@@ -88,7 +47,7 @@ export default function TelemetryChart() {
     <section className="panel">
       <h2>Telemetry</h2>
       <div className="chart-tabs">
-        {Object.keys(data.series).map((key) => (
+        {(Object.keys(data.series) as TelemetrySeriesKey[]).map((key) => (
           <button
             key={key}
             className={key === selected ? 'chart-tab chart-tab-active' : 'chart-tab'}

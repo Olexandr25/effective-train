@@ -6,6 +6,7 @@
 
 export function flashAlert() {
   const el = document.querySelector('.alert-banner');
+  if (!el) return;
   el.classList.add('alert-flash');
   setTimeout(() => el.classList.remove('alert-flash'), 600);
 }
