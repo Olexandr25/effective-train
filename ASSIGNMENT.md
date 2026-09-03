@@ -64,9 +64,9 @@ during Research, decide which value is right, and document your decision in
 Checks:
 
 - [x] `E1.1` docs/refactor-plan.md committed, ≥ 20 lines
-- [ ] `E1.2` Dashboard.tsx < 150 non-empty lines
+- [x] `E1.2` Dashboard.tsx < 150 non-empty lines
 - [x] `E1.3` OldDashboard.tsx deleted
-- [ ] `E1.4` src/hooks/ has a shared hook
+- [x] `E1.4` src/hooks/ has a shared hook
 - [x] `E1.5` src/domain/ has extracted pure logic
 - [x] `E1.6` zero `any` in src/api/
 - [x] `E1.7` src/config.ts exists
@@ -95,10 +95,10 @@ showing your PreToolUse hook actually blocking an edit attempt.
 
 Checks:
 
-- [ ] `E2.1` .claude/settings.json is valid JSON
-- [ ] `E2.2` PreToolUse, PostToolUse, UserPromptSubmit all configured
-- [ ] `E2.3` ≥ 2 executable scripts in .claude/hooks/
-- [ ] `E2.4` docs/hooks-demo.md shows a hook firing, ≥ 10 lines
+- [x] `E2.1` .claude/settings.json is valid JSON
+- [x] `E2.2` PreToolUse, PostToolUse, UserPromptSubmit all configured
+- [x] `E2.3` ≥ 2 executable scripts in .claude/hooks/
+- [x] `E2.4` docs/hooks-demo.md shows a hook firing, ≥ 10 lines
 
 ---
 
