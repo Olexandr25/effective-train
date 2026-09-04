@@ -159,7 +159,7 @@ Checks:
 - [x] `E4.1` public/api/fuel.json exists
 - [x] `E4.2` a Fuel widget component exists
 - [x] `E4.3` fuel domain logic in src/domain/ (with a unit test)
-- [ ] plus: the full gauntlet stays green
+- [x] plus: the full gauntlet stays green
 
 ---
 

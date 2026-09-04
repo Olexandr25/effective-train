@@ -71,7 +71,7 @@ export function buildDashboardView(
     { label: 'Hull Integrity', tileClass: hullIntegrityClass, sub: 'MMOD shielding rated to 97.0', value: latestIntegrity.toFixed(1), unit: '%' },
     { label: 'Open Incidents', tileClass: incidentsClass, sub: `${unresolvedCritical} critical · ${unresolvedWarning} warning · ${resolvedToday} resolved today`, value: unresolvedCritical + unresolvedWarning, unit: 'open' },
     { label: 'Next Resupply', tileClass: 'tile-' + resupplyLevel, sub: formatTimestamp(station.nextResupply), value: resupplyLabel, valueFontSize: 24 },
-    { label: 'Crew Rest', tileClass: sleepClass, sub: `${onDutyCount} on duty · ${offDutyCount} off duty`, value: avgSleep, unit: 'h avg' },
+    { label: 'Crew Rest', tileClass: 'tile-' + sleepClass, sub: `${onDutyCount} on duty · ${offDutyCount} off duty`, value: avgSleep, unit: 'h avg' },
     { label: 'Shift Board', tileClass: 'tile-ok', sub: `commissioned ${formatTimestamp(station.commissioned + 'T00:00:00Z')}`, value: `α ${shifts['alpha'] || 0} · β ${shifts['beta'] || 0} · γ ${shifts['gamma'] || 0}`, valueFontSize: 20 },
   ];
 
