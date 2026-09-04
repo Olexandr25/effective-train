@@ -51,6 +51,11 @@ export const SLEEP_THRESHOLDS = {
   warnBelowHours: 7,
 } as const;
 
+export const FUEL_THRESHOLDS = {
+  badBelowDays: 30,
+  warnBelowDays: 60,
+} as const;
+
 export const TREND_EPSILON = {
   o2: 0.15,
   power: 2,

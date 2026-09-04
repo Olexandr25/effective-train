@@ -156,9 +156,9 @@ file, or disable-and-re-enable with intent. Either way, note what you did in
 
 Checks:
 
-- [ ] `E4.1` public/api/fuel.json exists
-- [ ] `E4.2` a Fuel widget component exists
-- [ ] `E4.3` fuel domain logic in src/domain/ (with a unit test)
+- [x] `E4.1` public/api/fuel.json exists
+- [x] `E4.2` a Fuel widget component exists
+- [x] `E4.3` fuel domain logic in src/domain/ (with a unit test)
 - [ ] plus: the full gauntlet stays green
 
 ---
