@@ -120,11 +120,11 @@ annotated code template in `references/widget-template.md` and link it.
 
 Checks:
 
-- [ ] `E3.1` exactly one skill under .claude/skills/
-- [ ] `E3.2` frontmatter has name + description
-- [ ] `E3.3` frontmatter restricts allowed-tools
-- [ ] `E3.4` SKILL.md < 100 non-empty lines
-- [ ] `E3.5` references/ exists and is linked from SKILL.md
+- [x] `E3.1` exactly one skill under .claude/skills/
+- [x] `E3.2` frontmatter has name + description
+- [x] `E3.3` frontmatter restricts allowed-tools
+- [x] `E3.4` SKILL.md < 100 non-empty lines
+- [x] `E3.5` references/ exists and is linked from SKILL.md
 
 ---
 
