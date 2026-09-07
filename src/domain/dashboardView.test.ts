@@ -66,4 +66,41 @@ describe('buildDashboardView', () => {
     expect(crewTile?.value).toBe(6);
     expect(crewTile?.tileClass).toBe('tile-warn');
   });
+
+  it('classifies the Open Incidents tile as warn when only warnings are unresolved', () => {
+    const warningOnly: IncidentsResponse = {
+      updated: '2036-07-11T09:00:00Z',
+      items: [
+        { id: 'INC-2', severity: 'warning', system: 'power', title: 'Bus fluctuation', timestamp: '2036-07-11T07:00:00Z', resolved: false, assignee: 'b' },
+        { id: 'INC-3', severity: 'info', system: 'comms', title: 'Latency spike', timestamp: '2036-07-11T06:00:00Z', resolved: true, assignee: 'c' }
+      ]
+    };
+    const view = buildDashboardView(station, telemetry, crew, warningOnly, '2036-07-11T09:00:00Z');
+    const incidentsTile = view.tiles.find((t) => t.label === 'Open Incidents');
+    expect(incidentsTile?.tileClass).toBe('tile-warn');
+  });
+
+  it('classifies the Open Incidents tile as ok when nothing is unresolved', () => {
+    const allResolved: IncidentsResponse = {
+      updated: '2036-07-11T09:00:00Z',
+      items: [
+        { id: 'INC-3', severity: 'info', system: 'comms', title: 'Latency spike', timestamp: '2036-07-11T06:00:00Z', resolved: true, assignee: 'c' }
+      ]
+    };
+    const view = buildDashboardView(station, telemetry, crew, allResolved, '2036-07-11T09:00:00Z');
+    const incidentsTile = view.tiles.find((t) => t.label === 'Open Incidents');
+    expect(incidentsTile?.tileClass).toBe('tile-ok');
+  });
+
+  it('defaults alpha and beta shift counts to 0 when only gamma has crew', () => {
+    const gammaOnlyCrew: CrewResponse = {
+      updated: '2036-07-11T09:00:00Z',
+      members: [
+        { id: 'c3', name: 'Yuki Tanaka', role: 'Pilot', shift: 'gamma', onDuty: true, heartRate: 70, sleepHours: 8, missionDay: 900 }
+      ]
+    };
+    const view = buildDashboardView(station, telemetry, gammaOnlyCrew, incidents, '2036-07-11T09:00:00Z');
+    const shiftTile = view.tiles.find((t) => t.label === 'Shift Board');
+    expect(shiftTile?.value).toBe('α 0 · β 0 · γ 1');
+  });
 });

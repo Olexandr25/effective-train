@@ -23,9 +23,19 @@ describe('AlertBanner', () => {
     expect(container.firstChild).toBeNull();
   });
 
+  it('renders nothing when there is no top incident, even if the station is not NOMINAL', () => {
+    const { container } = render(<AlertBanner status="DEGRADED" statusColor="#f5a623" topIncident={null} />);
+    expect(container.firstChild).toBeNull();
+  });
+
   it('renders the top incident when the station is not NOMINAL', () => {
     render(<AlertBanner status="CRITICAL" statusColor="#ff4d4d" topIncident={incident} />);
     expect(screen.getByText('CRITICAL ALERT')).toBeTruthy();
     expect(screen.getByText(/O2 dip/)).toBeTruthy();
+  });
+
+  it('labels a non-critical alert as ATTENTION rather than CRITICAL ALERT', () => {
+    render(<AlertBanner status="DEGRADED" statusColor="#f5a623" topIncident={incident} />);
+    expect(screen.getByText('ATTENTION')).toBeTruthy();
   });
 });

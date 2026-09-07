@@ -4,6 +4,7 @@ import Dashboard from './Dashboard';
 
 afterEach(() => {
   cleanup();
+  FIXTURES.telemetry = TELEMETRY;
 });
 
 const STATION = {
@@ -65,5 +66,14 @@ describe('Dashboard', () => {
     render(<Dashboard />);
     await screen.findByText('ISS Kruger-60');
     expect(screen.getByText(/O2 dip/)).toBeTruthy();
+  });
+
+  it('flashes the critical alert when the latest O2 reading drops below the critical floor', async () => {
+    FIXTURES.telemetry = {
+      ...TELEMETRY,
+      series: { ...TELEMETRY.series, o2: { ...TELEMETRY.series.o2, points: [20.5, 20.3, 20.1, 19.7, 19.0] } }
+    };
+    render(<Dashboard />);
+    expect(await screen.findByText('CRITICAL ALERT')).toBeTruthy();
   });
 });

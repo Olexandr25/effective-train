@@ -52,4 +52,15 @@ describe('computeIncidentStats', () => {
     const stats = computeIncidentStats([incident({ resolved: true })], '2036-07-11');
     expect(stats.topIncident).toBeNull();
   });
+
+  it('breaks a same-severity tie the other way when the later item comes first', () => {
+    const stats = computeIncidentStats(
+      [
+        incident({ id: 'LATER', severity: 'critical', timestamp: '2036-07-11T10:00:00Z' }),
+        incident({ id: 'EARLIER', severity: 'critical', timestamp: '2036-07-11T08:00:00Z' }),
+      ],
+      '2036-07-11'
+    );
+    expect(stats.topIncident?.id).toBe('LATER');
+  });
 });
